@@ -108,208 +108,131 @@
 
 <header>
   <h1>측정 데이터 자동화 작업</h1>
-  <p class="lead">삼기 · CMM 성적서 수집, 측정 실수 검사, 측정 PC 저장 자동화 · 2026-10-17 ~ 2026-11-03</p>
-  <div class="facts">
-    <div class="fact"><b>2곳</b><span>공장 (1공장 C동 · 2공장 B동)</span></div>
-    <div class="fact"><b>14대</b><span>CMM 측정 PC + 형상·조도 2대</span></div>
-    <div class="fact"><b>약 8.7만 개</b><span>모은 성적서 파일</span></div>
-    <div class="fact"><b>546개</b><span>커밋 (저장소 3개)</span></div>
-  </div>
+  <p class="lead">CMM 성적서 수집, 측정 실수 검사, 측정 PC 저장 자동화 · 2026-10-17 ~ 2026-11-03</p>
 </header>
 
-<h2>대표 작업</h2>
+<h2>구현한 기능</h2>
 
 <article class="work">
   <h3>1. 성적서 자동 수집 · DB화</h3>
-  <div class="when">2026-10-17 ~ 11-02 · 두 공장 모두</div>
-  <dl class="row">
-    <dt>현장 문제</dt>
-    <dd>측정 PC마다 엑셀·메모장 성적서가 흩어져 있어, 품번별 이력이나 치수 경향을 볼 수 없었음</dd>
-    <dt>한 일</dt>
-    <dd><ul>
-      <li>측정 PC 공유 폴더를 1분 주기로 읽어 측정값만 Parquet DB에 쌓는 수집기</li>
-      <li>원본은 읽기만 하고, 임시 사본은 SHA-256 · ZIP CRC로 무결성을 확인한 뒤 바로 삭제</li>
-      <li>PC-DMIS 엑셀 · 뉴로메저 성적서 형식을 모두 해석, 260자 넘는 긴 경로도 처리</li>
-    </ul></dd>
-    <dt>결과</dt>
-    <dd><ul>
-      <li>1공장 C동 5대 <span class="num">38,951개</span>, 2공장 B동 8대 <span class="num">48,154개</span> 수집</li>
-      <li>엑셀 해석 파일당 <span class="num">499ms → 37ms</span> (예전 판과 1,542개 대조, 다른 줄 0개)</li>
-      <li>2공장 1회 수집 <span class="num">7분 52초 → 22초</span>, 기간 조회 <span class="num">13.5초 → 0.6초</span></li>
-      <li>측정 PC 1대 원본 531MB → DB 38.9MB (측정값 552만 줄)</li>
-    </ul></dd>
-    <dt>품질 의미</dt>
-    <dd>모든 측정 이력의 추적성 확보, 원본 데이터 보존</dd>
-  </dl>
+  <ul class="safe">
+    <li>측정 PC 공유 폴더를 1분마다 읽어 측정값을 Parquet DB에 쌓음</li>
+    <li>원본은 읽기만, 임시 사본은 무결성 확인 뒤 바로 삭제</li>
+    <li>PC-DMIS 엑셀 · 뉴로메저 성적서 형식 해석, 260자 넘는 긴 경로 처리</li>
+    <li>측정 데이터 대시보드: 측정기별 성적서 수, 기간별 NG율, 아이템별 성적서와 도면·3D 연결</li>
+  </ul>
   <figure>
-    <img src="img/dash_main.jpg" alt="측정 데이터 대시보드 첫 화면: 측정기별 성적서 수, 30일 성적서·NG율·측정값 요약, 제품군·아이템별 성적서" loading="lazy">
-    <figcaption>측정 데이터 대시보드 — 측정기별 성적서 수, 기간별 NG율·측정값 요약, 아이템별 성적서와 도면·3D 연결</figcaption>
+    <img src="img/dash_main.jpg" alt="측정 데이터 대시보드 첫 화면" loading="lazy">
+    <figcaption>측정 데이터 대시보드</figcaption>
   </figure>
   <span class="tag">PowerShell</span><span class="tag">C#</span><span class="tag">DuckDB · Parquet</span>
 </article>
 
 <article class="work">
   <h3>2. 성적서 제목 실수 검사 · 자동 보정</h3>
-  <div class="when">2026-10-17 ~ 10-31</div>
-  <dl class="row">
-    <dt>현장 문제</dt>
-    <dd>작업자가 손으로 적는 라인 · 가공 LOT · 소재 LOT · 근무 차수 · 날짜에 오타가 잦고, 다른 품번 폴더에 저장하는 실수도 있었음</dd>
-    <dt>한 일</dt>
-    <dd><ul>
-      <li>사람이 적지 않는 근거(측정 시각, 저장 시각, 측정값 패턴, 측정 항목 순서)로 제목을 교차 확인</li>
-      <li>결과를 <b>의심 / 자동 보정 / 사람 승인</b> 세 단계로 나눔 — 애매하면 자동 처리 대신 의심으로</li>
-      <li>대시보드에서 바로 승인 · 거부</li>
-    </ul></dd>
-    <dt>결과</dt>
-    <dd><ul>
-      <li>회귀 시험 88건, 잘못 고친 것 <span class="num">0건</span></li>
-      <li>첫 30일 2,211개 검사: 의심 167 · 주의 235 · 자동 보정 76</li>
-      <li>과탐을 줄여 의심 성적서 <span class="num">720 → 335</span></li>
-      <li>9월 업무일지 3,653줄과 대조해 3,271줄 일치 확인</li>
-    </ul></dd>
-    <dt>품질 의미</dt>
-    <dd>LOT 추적성, 다른 품번 폴더 오저장 · 측정이 중간에 끊긴 성적서 탐지</dd>
-  </dl>
+  <ul class="safe">
+    <li>라인 · 가공 LOT · 소재 LOT · 근무 차수 · 날짜를 측정 시각, 저장 시각, 측정값 패턴, 측정 항목 순서로 교차 확인</li>
+    <li>결과를 의심 / 자동 보정 / 사람 승인 세 단계로 나눔</li>
+    <li>다른 품번 폴더 오저장 · 측정이 중간에 끊긴 성적서 탐지</li>
+    <li>대시보드에서 승인 · 거부</li>
+  </ul>
   <span class="tag">PowerShell</span><span class="tag">C#</span><span class="tag">정규식 · 통계</span>
 </article>
 
 <article class="work">
   <h3>3. 측정 PC 자동 저장 · 저장 전 검사</h3>
-  <div class="when">2026-10-27 ~ 11-02 · PC-DMIS 측정 PC 4대</div>
-  <dl class="row">
-    <dt>현장 문제</dt>
-    <dd>PC-DMIS에서 프로그램과 엑셀 성적서를 손으로 저장하다 이름이 틀리거나 저장이 빠짐</dd>
-    <dt>한 일</dt>
-    <dd><ul>
-      <li>표제란에서 <b>'적용'</b> 한 번이면 제목 검사 → 프로그램 저장 → 엑셀 저장까지 끝남</li>
-      <li>빈 칸이면 적용 버튼 꺼짐, 거푸 누름 무시, 측정 항목 종류가 틀리면 NG 창, 근무가 바뀌면 지난 LOT 비움</li>
-      <li>저장 중 진행 창 표시</li>
-    </ul></dd>
-    <dt>결과</dt>
-    <dd><ul>
-      <li>측정 PC 1대 저장 112번: 평균 <span class="num">7.4초</span>, 멈춘 적 <span class="num">0번</span></li>
-      <li>제목 검사 규칙을 전수 검사(바른 제목 96,064개 · 틀린 제목 30,960개)해, 2027년이 되면 양산품 저장이 모두 막혔을 결함을 미리 수정</li>
-      <li>1대 시범 후 4대 모두 적용</li>
-    </ul></dd>
-    <dt>품질 의미</dt>
-    <dd>저장 단계에서 사람 실수를 막아, 잘못된 성적서가 아예 생기지 않게 함</dd>
-  </dl>
+  <ul class="safe">
+    <li>표제란 '적용' 한 번으로 제목 검사 → 프로그램 저장 → 엑셀 저장</li>
+    <li>빈 칸이면 적용 버튼 꺼짐, 거푸 누름 무시, 측정 항목 종류가 틀리면 NG 창, 근무가 바뀌면 지난 LOT 비움</li>
+    <li>저장 중 진행 창과 입력 잠금, 저장 완료 창</li>
+  </ul>
   <figure class="flow">
-    <img src="img/pyoje.png" alt="표제란 화면: 측정일자·차종·품명·소재로트·가공라인·가공로트·측정결과를 적고 적용을 누름" loading="lazy">
+    <img src="img/pyoje.png" alt="표제란 화면" loading="lazy">
     <div class="stack">
-      <img src="img/save_ing.png" alt="표제란 저장 중 창: 저장 중 초 표시, 끝날 때까지 키보드·마우스 잠금" loading="lazy">
-      <img src="img/save_done.png" alt="저장 완료 창: 파일 이름과 저장 경로" loading="lazy">
+      <img src="img/save_ing.png" alt="저장 중 창" loading="lazy">
+      <img src="img/save_done.png" alt="저장 완료 창" loading="lazy">
     </div>
   </figure>
-  <figcaption>표제란을 채우고 '적용' → 화면 가운데 '저장 중'(입력 잠금) → 끝나는 순간 '저장 완료'. 값은 예시이고, 저장 창은 실제 도구와 같은 크기·색·문구로 다시 그린 것</figcaption>
+  <figcaption>표제란 → 저장 중 → 저장 완료</figcaption>
   <span class="tag">PC-DMIS COM</span><span class="tag">PowerShell</span><span class="tag">C#</span><span class="tag">Python</span>
 </article>
 
 <article class="work">
   <h3>4. 관리공차 기준 재판정</h3>
-  <div class="when">2026-10-21, 10-31</div>
-  <dl class="row">
-    <dt>현장 문제</dt>
-    <dd>아노다이징 전 가공품을 완성품 도면 공차로 판정하고 있어, 공정 단계에 맞지 않는 OK가 나옴</dd>
-    <dt>한 일</dt>
-    <dd>가공 공차표를 따로 두고, 이미 모은 데이터까지 소급해 다시 판정</dd>
-    <dt>결과</dt>
-    <dd><ul>
-      <li>68,386줄 재판정, NG <span class="num">56 → 444</span> (판정이 바뀐 418줄 중 OK→NG 403)</li>
-      <li>성적서 NG 수 39,012개가 측정값과 모두 일치함을 확인</li>
-    </ul></dd>
-    <dt>품질 의미</dt>
-    <dd>공정 간 공차 관리, 판정 기준을 하나로 맞춤</dd>
-  </dl>
+  <ul class="safe">
+    <li>가공 공차표를 따로 두고 공정 단계에 맞는 공차로 판정</li>
+    <li>이미 모은 데이터까지 소급해 다시 판정</li>
+  </ul>
   <span class="tag">DuckDB · SQL</span><span class="tag">PowerShell</span>
 </article>
 
 <article class="work">
-  <h3>5. 성적서를 열면 도면 자리 바로 보기 — 3D · 형상 · 조도</h3>
-  <div class="when">2026-10-30 ~ 11-03 · 대시보드 · 업무일지</div>
-  <dl class="row">
-    <dt>현장 문제</dt>
-    <dd>성적서의 항목(예: 4B73 Ø14.81 Rz4)이 도면 어디인지 보려면 큰 도면 TIF를 열어 손으로 찾아야 했고, 형상·조도 성적서는 도면과 이어진 곳이 없었음</dd>
-    <dt>한 일</dt>
-    <dd><ul>
-      <li>CMM 성적서를 열면 최신 도면 3D 위에 측정 위치와 NG 편차 방향을 표시</li>
-      <li>형상·조도 성적서를 열면 제목의 항목 번호·지름·Rz를 읽어, 도면에서 그 자리를 찾아 잘라 보여 주고 해당 지름·Rz에 파란 동그라미</li>
-      <li>도면 글자는 오픈소스 OCR(Tesseract)로 읽고, OCR이 Ø를 다른 글자로 읽은 경우·괄호 참고 길이·각도·공차를 구분</li>
-      <li>번호가 단면·상세도 제목이면 그 단면 그림 범위(흰 띠까지)를 찾아 그 안의 지름·Rz만 표시 — 옆 단면의 치수는 사진에 보여도 표시하지 않음</li>
-      <li>제목에 번호가 없으면 지난 제목의 '#공정 + Ø값' 짝으로 번호를 찾음</li>
-    </ul></dd>
-    <dt>결과</dt>
-    <dd><ul>
-      <li>실제 도면 3종으로 만든 도면 찾기 시험 <span class="num">모두 통과</span> — 서버 API를 실제 DB·도면으로 끝까지 부르는 항목 포함</li>
-      <li>값을 못 읽은 Rz는 짐작으로 채우지 않고 '그림에서 확인'으로 표시</li>
-    </ul></dd>
-    <dt>품질 의미</dt>
-    <dd>NG·변경점 성적서를 볼 때 도면 위치를 바로 확인해 판단 시간을 줄이고, 잘못된 위치를 보고 판단하는 실수를 막음</dd>
-  </dl>
+  <h3>5. 성적서를 열면 도면 자리 표시 — 3D · 형상 · 조도</h3>
+  <ul class="safe">
+    <li>CMM 성적서: 최신 도면 3D 위에 측정 위치와 NG 편차 방향 표시</li>
+    <li>형상·조도 성적서: 제목의 항목 번호·지름·Rz를 도면에서 찾아 그 자리를 잘라 보여 줌</li>
+    <li>도면 글자를 OCR(Tesseract)로 읽어 색인</li>
+    <li>번호가 단면·상세도 제목이면 그 단면 범위를 찾아 그 안의 지름·Rz만 표시</li>
+    <li>제목에 번호가 없으면 지난 제목의 '#공정 + Ø값' 짝으로 번호를 찾음</li>
+  </ul>
   <figure>
-    <img src="img/dwg_spot.png" alt="형상·조도 성적서를 열었을 때 나오는 도면 자르기: 단면 P-P 제목의 4B73 에 빨간 동그라미, 치수 숫자는 모자이크" loading="lazy">
-    <figcaption>형상·조도 성적서를 열면 — 제목의 항목 번호(4B73)를 도면에서 찾아 그 단면 둘레를 잘라 보여 줌. 치수 숫자는 모자이크</figcaption>
+    <img src="img/dwg_spot.png" alt="형상·조도 성적서의 도면 자르기: 4B73 에 빨간 동그라미, 치수는 모자이크" loading="lazy">
+    <figcaption>형상·조도 성적서 도면 자리 (치수 모자이크)</figcaption>
   </figure>
   <span class="tag">Tesseract OCR</span><span class="tag">PowerShell</span><span class="tag">JavaScript</span><span class="tag">3D (trimesh)</span>
 </article>
 
-<h2>그 밖의 작업</h2>
+<h2>그 밖의 기능</h2>
 <div class="cards">
   <div class="card">
     <h3>측정 프로그램 원본 보호 · 수동 저장 격리</h3>
-    <p>PC-DMIS 원본 프로그램은 1분마다 읽기 전용으로 지킴. 스스로 자동 저장하는 뉴로메저는 측정 뒤 원본과 다르면 되돌리고, 바뀐 곳을 30일 기록. 규칙 밖 손 저장 성적서는 지우지 않고 격리.</p>
+    <p>PC-DMIS 원본 프로그램 읽기 전용 유지, 뉴로메저 자동 저장은 측정 뒤 원본으로 되돌림, 규칙 밖 손 저장 성적서 격리.</p>
   </div>
   <div class="card">
     <h3>형상 · 조도 데이터 통합</h3>
-    <p>형상·조도 측정기 파일을 모아 CMM 데이터와 연결 (같은 아이템·라인·날 2,812쌍). 원시 곡선에서 직접 계산한 Rz 932개 중 99.2%가 장비 값과 5% 안. 면가공 Wt 누락 26건 발견.</p>
+    <p>형상·조도 측정기 파일을 모아 CMM 데이터와 연결, 원시 곡선에서 Rz 직접 계산.</p>
   </div>
   <div class="card">
     <h3>품질 대시보드 · 3D 측정 위치</h3>
-    <p>성적서 양식 화면, 치수별 경향·분포·Cpk, 3D 모델 위 측정 위치와 편차 방향 표시. 측정 프로그램을 해석해 CAD에 맞춤 — 위치 항목 68개 중 66개가 0.05mm 안.</p>
+    <p>성적서 양식 화면, 치수별 경향·분포·Cpk, 측정 프로그램을 해석해 3D 모델 위에 측정 위치와 편차 방향 표시.</p>
   </div>
   <div class="card">
     <h3>'OK'라고 적힌 NG 성적서 찾기</h3>
-    <p>제목에 OK라고 적은 성적서 2,208개 중 1,482개에 공차를 넘은 칸이 있음을 찾아, 사람마다 판정 기준이 다르다는 점을 드러냄.</p>
+    <p>제목의 판정과 측정값의 공차 초과를 대조.</p>
   </div>
   <div class="card">
     <h3>CMM 가동률 · 업무일지</h3>
-    <p>측정 시작·끝을 실시간으로 받아 식사·교대 시간을 뺀 가동률 계산, 교정·소재·가공 측정 구분. 업무일지에서 변경점 진행(NG n회 → 양호)을 묶어 보여 줌.</p>
+    <p>측정 시작·끝을 실시간으로 받아 가동률 계산, 근무별 업무일지 자동 작성, 변경점 진행 묶어 보기.</p>
   </div>
   <div class="card">
     <h3>생산변경점 자료 자동 모음</h3>
-    <p>사람이 손으로 모으던 변경점 성적서·형상·조도 자료를 자동으로 모음. 첫 밤 9건 복사, 다시 잰 앞 건은 NG로 분류, 빠진 것 없음.</p>
+    <p>변경점 성적서·형상·조도 자료를 자동으로 모아 건별 폴더로 정리.</p>
   </div>
 </div>
 
 <h2>화면</h2>
 <div class="shots">
   <figure>
-    <img src="img/dash_report.jpg" alt="성적서 팝업: 왼쪽은 성적서 양식과 같은 라인 이전 성적서 5개 편차, 오른쪽은 3D 모델 위 NG 측정 위치와 편차 방향" loading="lazy">
-    <figcaption>성적서 보기 — 왼쪽은 회사 성적서 양식과 같은 라인의 이전 성적서 5개 편차, 오른쪽은 최신 도면 3D 위에 NG 위치와 편차 방향(큼·작음)</figcaption>
+    <img src="img/dash_report.jpg" alt="성적서 보기: 성적서 양식과 3D 측정 위치" loading="lazy">
+    <figcaption>성적서 보기 — 성적서 양식, 이전 성적서 편차, 3D 위 NG 위치와 편차 방향</figcaption>
   </figure>
   <figure>
-    <img src="img/live.jpg" alt="측정기 가동 현황: 측정기별 가동률 도넛, 시간대별 측정 막대와 남은 시간" loading="lazy">
-    <figcaption>측정기 가동 현황 — 30초마다 새로 읽음. 측정기별 가동률과 아이템 비율, 시간대별 측정 막대·남은 시간(식사 시간 제외)</figcaption>
+    <img src="img/live.jpg" alt="측정기 가동 현황" loading="lazy">
+    <figcaption>측정기 가동 현황</figcaption>
   </figure>
   <figure class="crop">
-    <img src="img/journal.jpg" alt="측정실 업무일지: 근무별 성적서·NG 건수, 아이템·라인·차수별 판정 표" loading="lazy">
-    <figcaption>측정실 업무일지 — 근무(주간·야간)별로 아이템·라인·차수 판정을 자동으로 채움. 변경점 진행(NG n회 → 양호)도 묶어 보여 줌</figcaption>
+    <img src="img/journal.jpg" alt="측정실 업무일지" loading="lazy">
+    <figcaption>측정실 업무일지</figcaption>
   </figure>
 </div>
-<p class="lead" style="font-size:13px;margin-top:10px">모든 화면의 품번·측정기 이름·고객사·LOT 는 가렸습니다.</p>
 
-<h2>신뢰성 장치</h2>
+<h2>안전 장치</h2>
 <ul class="safe">
-  <li><b>원본은 읽기만</b> — 측정 데이터·프로그램 폴더에는 쓰지 않고, 수집기는 측정 PC의 저장을 막지 않음</li>
-  <li><b>서명 배포 · 자동 갱신</b> — RSA 서명이 맞는 새 판만 받고, 측정·저장 중이 아닐 때 1분 안에 스스로 새 판으로 바뀜 (현장에 가서 껐다 켤 필요 없음)</li>
-  <li><b>지우기 상한</b> — 규칙이 잘못돼도 데이터가 한꺼번에 지워지지 않게 한 번에 200건까지</li>
-  <li><b>형식 검증 (TLA+)</b> — 저장 도구의 수명·측정 상태를 모델로 검사해, 넘겨받는 사이에 끝난 측정이 빠지는 경우 등 반례를 찾고 실제 코드에서 재현한 뒤 수정</li>
-  <li><b>장애 원인 분석</b> — 측정 PC 재시작 원인을 보안 프로그램 설치로 밝히고, 저장 실패로 엑셀이 없던 성적서는 측정 프로그램에서 측정값을 복원</li>
+  <li>원본 읽기만 — 측정 데이터·프로그램 폴더에 쓰지 않음</li>
+  <li>서명 배포 · 자동 갱신 — RSA 서명이 맞는 새 판만 받고, 측정·저장 중이 아닐 때 스스로 새 판으로 바뀜</li>
+  <li>지우기 상한 — 한 번에 200건까지</li>
+  <li>형식 검증(TLA+) — 저장 도구 수명·측정 상태 모델 검사</li>
 </ul>
-
-<footer>
-  AI 코딩 도구(Claude Code)로 구현하고, 업무 규칙 결정과 현장 결과 확인·검증은 직접 했습니다.
-</footer>
 
 </main>
 </body>
