@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>측정 데이터 자동화 작업</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1d2433;
+    --sub: #5b6475;
+    --line: #e2e6ee;
+    --bg: #ffffff;
+    --soft: #f5f7fa;
+    --accent: #1f5fa8;
+    --accent-soft: #e8f0fa;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    word-break: keep-all;
+  }
+  main { max-width: 880px; margin: 0 auto; padding: 48px 16px 64px; }
+  h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: -0.02em; }
+  h2 {
+    font-size: 19px; margin: 44px 0 16px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--ink); letter-spacing: -0.01em;
+  }
+  h3 { font-size: 17px; margin: 0 0 4px; }
+  p { margin: 0 0 8px; }
+  .lead { color: var(--sub); margin: 0; }
+
+  .facts {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 24px;
+  }
+  .fact { background: var(--soft); border-radius: 8px; padding: 12px 14px; }
+  .fact b { display: block; font-size: 20px; color: var(--accent); }
+  .fact span { font-size: 13px; color: var(--sub); }
+
+  .work {
+    border: 1px solid var(--line); border-radius: 10px; padding: 20px 22px;
+    margin-bottom: 16px; break-inside: avoid;
+  }
+  .work .when { font-size: 13px; color: var(--sub); margin-bottom: 12px; }
+  .row { display: grid; grid-template-columns: 92px 1fr; gap: 4px 14px; margin-top: 8px; }
+  .row dt { font-weight: 700; font-size: 13px; color: var(--sub); padding-top: 2px; }
+  .row dd { margin: 0; }
+  .row ul { margin: 0; padding-left: 18px; }
+  .row li { margin: 2px 0; }
+  .num { font-weight: 700; color: var(--accent); }
+  .tag {
+    display: inline-block; font-size: 12px; background: var(--accent-soft); color: var(--accent);
+    border-radius: 4px; padding: 1px 7px; margin: 2px 4px 0 0;
+  }
+
+  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .card {
+    background: var(--soft); border-radius: 8px; padding: 14px 16px; break-inside: avoid;
+  }
+  .card h3 { font-size: 15px; margin-bottom: 6px; }
+  .card p { font-size: 14px; margin: 0; }
+
+  .safe { margin: 0; padding-left: 18px; }
+  .safe li { margin: 6px 0; }
+
+  footer {
+    margin-top: 44px; padding-top: 14px; border-top: 1px solid var(--line);
+    font-size: 13px; color: var(--sub);
+  }
+
+  @media (max-width: 640px) {
+    main { padding-top: 28px; }
+    .facts { grid-template-columns: repeat(2, 1fr); }
+    .cards { grid-template-columns: 1fr; }
+    .row { grid-template-columns: 1fr; }
+    .row dt { padding-top: 6px; }
+  }
+  @media print {
+    @page { size: A4; margin: 14mm 13mm; }
+    body { font-size: 12.5px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    main { max-width: none; padding: 0; }
+    h2 { margin-top: 26px; break-after: avoid; }
+    .work { padding: 14px 16px; margin-bottom: 10px; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>측정 데이터 자동화 작업</h1>
+  <p class="lead">삼기 · CMM 성적서 수집, 측정 실수 검사, 측정 PC 저장 자동화 · 2026-10-17 ~ 2026-11-02</p>
+  <div class="facts">
+    <div class="fact"><b>2곳</b><span>공장 (1공장 C동 · 2공장 B동)</span></div>
+    <div class="fact"><b>14대</b><span>CMM 측정 PC + 형상·조도 2대</span></div>
+    <div class="fact"><b>약 8.7만 개</b><span>모은 성적서 파일</span></div>
+    <div class="fact"><b>533개</b><span>커밋 (저장소 3개)</span></div>
+  </div>
+</header>
+
+<h2>대표 작업</h2>
+
+<article class="work">
+  <h3>1. 성적서 자동 수집 · DB화</h3>
+  <div class="when">2026-10-17 ~ 11-02 · 두 공장 모두</div>
+  <dl class="row">
+    <dt>현장 문제</dt>
+    <dd>측정 PC마다 엑셀·메모장 성적서가 흩어져 있어, 품번별 이력이나 치수 경향을 볼 수 없었음</dd>
+    <dt>한 일</dt>
+    <dd><ul>
+      <li>측정 PC 공유 폴더를 1분 주기로 읽어 측정값만 Parquet DB에 쌓는 수집기</li>
+      <li>원본은 읽기만 하고, 임시 사본은 SHA-256 · ZIP CRC로 무결성을 확인한 뒤 바로 삭제</li>
+      <li>PC-DMIS 엑셀 · 뉴로메저 성적서 형식을 모두 해석, 260자 넘는 긴 경로도 처리</li>
+    </ul></dd>
+    <dt>결과</dt>
+    <dd><ul>
+      <li>1공장 C동 5대 <span class="num">38,951개</span>, 2공장 B동 8대 <span class="num">48,154개</span> 수집</li>
+      <li>엑셀 해석 파일당 <span class="num">499ms → 37ms</span> (예전 판과 1,542개 대조, 다른 줄 0개)</li>
+      <li>2공장 1회 수집 <span class="num">7분 52초 → 22초</span>, 기간 조회 <span class="num">13.5초 → 0.6초</span></li>
+      <li>측정 PC 1대 원본 531MB → DB 38.9MB (측정값 552만 줄)</li>
+    </ul></dd>
+    <dt>품질 의미</dt>
+    <dd>모든 측정 이력의 추적성 확보, 원본 데이터 보존</dd>
+  </dl>
+  <span class="tag">PowerShell</span><span class="tag">C#</span><span class="tag">DuckDB · Parquet</span>
+</article>
+
+<article class="work">
+  <h3>2. 성적서 제목 실수 검사 · 자동 보정</h3>
+  <div class="when">2026-10-17 ~ 10-31</div>
+  <dl class="row">
+    <dt>현장 문제</dt>
+    <dd>작업자가 손으로 적는 라인 · 가공 LOT · 소재 LOT · 근무 차수 · 날짜에 오타가 잦고, 다른 품번 폴더에 저장하는 실수도 있었음</dd>
+    <dt>한 일</dt>
+    <dd><ul>
+      <li>사람이 적지 않는 근거(측정 시각, 저장 시각, 측정값 패턴, 측정 항목 순서)로 제목을 교차 확인</li>
+      <li>결과를 <b>의심 / 자동 보정 / 사람 승인</b> 세 단계로 나눔 — 애매하면 자동 처리 대신 의심으로</li>
+      <li>대시보드에서 바로 승인 · 거부</li>
+    </ul></dd>
+    <dt>결과</dt>
+    <dd><ul>
+      <li>회귀 시험 88건, 잘못 고친 것 <span class="num">0건</span></li>
+      <li>첫 30일 2,211개 검사: 의심 167 · 주의 235 · 자동 보정 76</li>
+      <li>과탐을 줄여 의심 성적서 <span class="num">720 → 335</span></li>
+      <li>9월 업무일지 3,653줄과 대조해 3,271줄 일치 확인</li>
+    </ul></dd>
+    <dt>품질 의미</dt>
+    <dd>LOT 추적성, 다른 품번 폴더 오저장 · 측정이 중간에 끊긴 성적서 탐지</dd>
+  </dl>
+  <span class="tag">PowerShell</span><span class="tag">C#</span><span class="tag">정규식 · 통계</span>
+</article>
+
+<article class="work">
+  <h3>3. 측정 PC 자동 저장 · 저장 전 검사</h3>
+  <div class="when">2026-10-27 ~ 11-02 · PC-DMIS 측정 PC 4대</div>
+  <dl class="row">
+    <dt>현장 문제</dt>
+    <dd>PC-DMIS에서 프로그램과 엑셀 성적서를 손으로 저장하다 이름이 틀리거나 저장이 빠짐</dd>
+    <dt>한 일</dt>
+    <dd><ul>
+      <li>표제란에서 <b>'적용'</b> 한 번이면 제목 검사 → 프로그램 저장 → 엑셀 저장까지 끝남</li>
+      <li>빈 칸이면 적용 버튼 꺼짐, 거푸 누름 무시, 측정 항목 종류가 틀리면 NG 창, 근무가 바뀌면 지난 LOT 비움</li>
+      <li>저장 중 진행 창 표시</li>
+    </ul></dd>
+    <dt>결과</dt>
+    <dd><ul>
+      <li>측정 PC 1대 저장 112번: 평균 <span class="num">7.4초</span>, 멈춘 적 <span class="num">0번</span></li>
+      <li>제목 검사 규칙을 전수 검사(바른 제목 96,064개 · 틀린 제목 30,960개)해, 2027년이 되면 양산품 저장이 모두 막혔을 결함을 미리 수정</li>
+      <li>1대 시범 후 4대 모두 적용</li>
+    </ul></dd>
+    <dt>품질 의미</dt>
+    <dd>저장 단계에서 사람 실수를 막아, 잘못된 성적서가 아예 생기지 않게 함</dd>
+  </dl>
+  <span class="tag">PC-DMIS COM</span><span class="tag">PowerShell</span><span class="tag">C#</span><span class="tag">Python</span>
+</article>
+
+<article class="work">
+  <h3>4. 관리공차 기준 재판정</h3>
+  <div class="when">2026-10-21, 10-31</div>
+  <dl class="row">
+    <dt>현장 문제</dt>
+    <dd>아노다이징 전 가공품을 완성품 도면 공차로 판정하고 있어, 공정 단계에 맞지 않는 OK가 나옴</dd>
+    <dt>한 일</dt>
+    <dd>가공 공차표를 따로 두고, 이미 모은 데이터까지 소급해 다시 판정</dd>
+    <dt>결과</dt>
+    <dd><ul>
+      <li>68,386줄 재판정, NG <span class="num">56 → 444</span> (판정이 바뀐 418줄 중 OK→NG 403)</li>
+      <li>성적서 NG 수 39,012개가 측정값과 모두 일치함을 확인</li>
+    </ul></dd>
+    <dt>품질 의미</dt>
+    <dd>공정 간 공차 관리, 판정 기준을 하나로 맞춤</dd>
+  </dl>
+  <span class="tag">DuckDB · SQL</span><span class="tag">PowerShell</span>
+</article>
+
+<h2>그 밖의 작업</h2>
+<div class="cards">
+  <div class="card">
+    <h3>측정 프로그램 원본 보호 · 수동 저장 격리</h3>
+    <p>PC-DMIS 원본 프로그램은 1분마다 읽기 전용으로 지킴. 스스로 자동 저장하는 뉴로메저는 측정 뒤 원본과 다르면 되돌리고, 바뀐 곳을 30일 기록. 규칙 밖 손 저장 성적서는 지우지 않고 격리.</p>
+  </div>
+  <div class="card">
+    <h3>형상 · 조도 데이터 통합</h3>
+    <p>형상·조도 측정기 파일을 모아 CMM 데이터와 연결 (같은 아이템·라인·날 2,812쌍). 원시 곡선에서 직접 계산한 Rz 932개 중 99.2%가 장비 값과 5% 안. 면가공 Wt 누락 26건 발견.</p>
+  </div>
+  <div class="card">
+    <h3>품질 대시보드 · 3D 측정 위치</h3>
+    <p>성적서 양식 화면, 치수별 경향·분포·Cpk, 3D 모델 위 측정 위치와 편차 방향 표시. 측정 프로그램을 해석해 CAD에 맞춤 — 위치 항목 68개 중 66개가 0.05mm 안.</p>
+  </div>
+  <div class="card">
+    <h3>'OK'라고 적힌 NG 성적서 찾기</h3>
+    <p>제목에 OK라고 적은 성적서 2,208개 중 1,482개에 공차를 넘은 칸이 있음을 찾아, 사람마다 판정 기준이 다르다는 점을 드러냄.</p>
+  </div>
+  <div class="card">
+    <h3>CMM 가동률 · 업무일지</h3>
+    <p>측정 시작·끝을 실시간으로 받아 식사·교대 시간을 뺀 가동률 계산, 교정·소재·가공 측정 구분. 업무일지에서 변경점 진행(NG n회 → 양호)을 묶어 보여 줌.</p>
+  </div>
+  <div class="card">
+    <h3>생산변경점 자료 자동 모음</h3>
+    <p>사람이 손으로 모으던 변경점 성적서·형상·조도 자료를 자동으로 모음. 첫 밤 9건 복사, 다시 잰 앞 건은 NG로 분류, 빠진 것 없음.</p>
+  </div>
+</div>
+
+<h2>신뢰성 장치</h2>
+<ul class="safe">
+  <li><b>원본은 읽기만</b> — 측정 데이터·프로그램 폴더에는 쓰지 않고, 수집기는 측정 PC의 저장을 막지 않음</li>
+  <li><b>서명 배포 · 자동 갱신</b> — RSA 서명이 맞는 새 판만 받고, 측정·저장 중이 아닐 때 1분 안에 스스로 새 판으로 바뀜 (현장에 가서 껐다 켤 필요 없음)</li>
+  <li><b>지우기 상한</b> — 규칙이 잘못돼도 데이터가 한꺼번에 지워지지 않게 한 번에 200건까지</li>
+  <li><b>형식 검증 (TLA+)</b> — 저장 도구의 수명·측정 상태를 모델로 검사해, 넘겨받는 사이에 끝난 측정이 빠지는 경우 등 반례를 찾고 실제 코드에서 재현한 뒤 수정</li>
+  <li><b>장애 원인 분석</b> — 측정 PC 재시작 원인을 보안 프로그램 설치로 밝히고, 저장 실패로 엑셀이 없던 성적서는 측정 프로그램에서 측정값을 복원</li>
+</ul>
+
+<footer>
+  AI 코딩 도구(Claude Code)로 구현하고, 업무 규칙 결정과 현장 결과 확인·검증은 직접 했습니다.
+</footer>
+
+</main>
+</body>
+</html>
