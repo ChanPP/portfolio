@@ -108,12 +108,12 @@
 
 <header>
   <h1>측정 데이터 자동화 작업</h1>
-  <p class="lead">삼기 · CMM 성적서 수집, 측정 실수 검사, 측정 PC 저장 자동화 · 2026-10-17 ~ 2026-11-02</p>
+  <p class="lead">삼기 · CMM 성적서 수집, 측정 실수 검사, 측정 PC 저장 자동화 · 2026-10-17 ~ 2026-11-03</p>
   <div class="facts">
     <div class="fact"><b>2곳</b><span>공장 (1공장 C동 · 2공장 B동)</span></div>
     <div class="fact"><b>14대</b><span>CMM 측정 PC + 형상·조도 2대</span></div>
     <div class="fact"><b>약 8.7만 개</b><span>모은 성적서 파일</span></div>
-    <div class="fact"><b>533개</b><span>커밋 (저장소 3개)</span></div>
+    <div class="fact"><b>546개</b><span>커밋 (저장소 3개)</span></div>
   </div>
 </header>
 
@@ -222,6 +222,31 @@
     <dd>공정 간 공차 관리, 판정 기준을 하나로 맞춤</dd>
   </dl>
   <span class="tag">DuckDB · SQL</span><span class="tag">PowerShell</span>
+</article>
+
+<article class="work">
+  <h3>5. 성적서를 열면 도면 자리 바로 보기 — 3D · 형상 · 조도</h3>
+  <div class="when">2026-10-30 ~ 11-03 · 대시보드 · 업무일지</div>
+  <dl class="row">
+    <dt>현장 문제</dt>
+    <dd>성적서의 항목(예: 4B73 Ø14.81 Rz4)이 도면 어디인지 보려면 큰 도면 TIF를 열어 손으로 찾아야 했고, 형상·조도 성적서는 도면과 이어진 곳이 없었음</dd>
+    <dt>한 일</dt>
+    <dd><ul>
+      <li>CMM 성적서를 열면 최신 도면 3D 위에 측정 위치와 NG 편차 방향을 표시</li>
+      <li>형상·조도 성적서를 열면 제목의 항목 번호·지름·Rz를 읽어, 도면에서 그 자리를 찾아 잘라 보여 주고 해당 지름·Rz에 파란 동그라미</li>
+      <li>도면 글자는 오픈소스 OCR(Tesseract)로 읽고, OCR이 Ø를 다른 글자로 읽은 경우·괄호 참고 길이·각도·공차를 구분</li>
+      <li>번호가 단면·상세도 제목이면 그 단면 그림 범위(흰 띠까지)를 찾아 그 안의 지름·Rz만 표시 — 옆 단면의 치수는 사진에 보여도 표시하지 않음</li>
+      <li>제목에 번호가 없으면 지난 제목의 '#공정 + Ø값' 짝으로 번호를 찾음</li>
+    </ul></dd>
+    <dt>결과</dt>
+    <dd><ul>
+      <li>실제 도면 3종으로 만든 도면 찾기 시험 <span class="num">모두 통과</span> — 서버 API를 실제 DB·도면으로 끝까지 부르는 항목 포함</li>
+      <li>값을 못 읽은 Rz는 짐작으로 채우지 않고 '그림에서 확인'으로 표시</li>
+    </ul></dd>
+    <dt>품질 의미</dt>
+    <dd>NG·변경점 성적서를 볼 때 도면 위치를 바로 확인해 판단 시간을 줄이고, 잘못된 위치를 보고 판단하는 실수를 막음</dd>
+  </dl>
+  <span class="tag">Tesseract OCR</span><span class="tag">PowerShell</span><span class="tag">JavaScript</span><span class="tag">3D (trimesh)</span>
 </article>
 
 <h2>그 밖의 작업</h2>
