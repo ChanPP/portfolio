@@ -66,6 +66,18 @@
   .card h3 { font-size: 15px; margin-bottom: 6px; }
   .card p { font-size: 14px; margin: 0; }
 
+  figure { margin: 14px 0 6px; }
+  figure img {
+    display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px;
+  }
+  figure.crop img { max-height: 560px; object-fit: cover; object-position: top; }
+  figcaption { font-size: 12.5px; color: var(--sub); margin-top: 6px; }
+  .flow { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; align-items: start; }
+  .flow .stack { display: grid; gap: 10px; }
+  .flow .stack img { border: none; }
+  .shots { display: grid; gap: 18px; }
+  .shots figure { margin: 0; break-inside: avoid; }
+
   .safe { margin: 0; padding-left: 18px; }
   .safe li { margin: 6px 0; }
 
@@ -80,6 +92,7 @@
     .cards { grid-template-columns: 1fr; }
     .row { grid-template-columns: 1fr; }
     .row dt { padding-top: 6px; }
+    .flow { grid-template-columns: 1fr; }
   }
   @media print {
     @page { size: A4; margin: 14mm 13mm; }
@@ -128,6 +141,10 @@
     <dt>품질 의미</dt>
     <dd>모든 측정 이력의 추적성 확보, 원본 데이터 보존</dd>
   </dl>
+  <figure>
+    <img src="img/dash_main.jpg" alt="측정 데이터 대시보드 첫 화면: 측정기별 성적서 수, 30일 성적서·NG율·측정값 요약, 제품군·아이템별 성적서" loading="lazy">
+    <figcaption>측정 데이터 대시보드 — 측정기별 성적서 수, 기간별 NG율·측정값 요약, 아이템별 성적서와 도면·3D 연결</figcaption>
+  </figure>
   <span class="tag">PowerShell</span><span class="tag">C#</span><span class="tag">DuckDB · Parquet</span>
 </article>
 
@@ -177,6 +194,14 @@
     <dt>품질 의미</dt>
     <dd>저장 단계에서 사람 실수를 막아, 잘못된 성적서가 아예 생기지 않게 함</dd>
   </dl>
+  <figure class="flow">
+    <img src="img/pyoje.png" alt="표제란 화면: 측정일자·차종·품명·소재로트·가공라인·가공로트·측정결과를 적고 적용을 누름" loading="lazy">
+    <div class="stack">
+      <img src="img/save_ing.png" alt="표제란 저장 중 창: 저장 중 초 표시, 끝날 때까지 키보드·마우스 잠금" loading="lazy">
+      <img src="img/save_done.png" alt="저장 완료 창: 파일 이름과 저장 경로" loading="lazy">
+    </div>
+  </figure>
+  <figcaption>표제란을 채우고 '적용' → 화면 가운데 '저장 중'(입력 잠금) → 끝나는 순간 '저장 완료'. 값은 예시이고, 저장 창은 실제 도구와 같은 크기·색·문구로 다시 그린 것</figcaption>
   <span class="tag">PC-DMIS COM</span><span class="tag">PowerShell</span><span class="tag">C#</span><span class="tag">Python</span>
 </article>
 
@@ -226,6 +251,23 @@
     <p>사람이 손으로 모으던 변경점 성적서·형상·조도 자료를 자동으로 모음. 첫 밤 9건 복사, 다시 잰 앞 건은 NG로 분류, 빠진 것 없음.</p>
   </div>
 </div>
+
+<h2>화면</h2>
+<div class="shots">
+  <figure>
+    <img src="img/dash_report.jpg" alt="성적서 팝업: 왼쪽은 성적서 양식과 같은 라인 이전 성적서 5개 편차, 오른쪽은 3D 모델 위 NG 측정 위치와 편차 방향" loading="lazy">
+    <figcaption>성적서 보기 — 왼쪽은 회사 성적서 양식과 같은 라인의 이전 성적서 5개 편차, 오른쪽은 최신 도면 3D 위에 NG 위치와 편차 방향(큼·작음)</figcaption>
+  </figure>
+  <figure>
+    <img src="img/live.jpg" alt="측정기 가동 현황: 측정기별 가동률 도넛, 시간대별 측정 막대와 남은 시간" loading="lazy">
+    <figcaption>측정기 가동 현황 — 30초마다 새로 읽음. 측정기별 가동률과 아이템 비율, 시간대별 측정 막대·남은 시간(식사 시간 제외)</figcaption>
+  </figure>
+  <figure class="crop">
+    <img src="img/journal.jpg" alt="측정실 업무일지: 근무별 성적서·NG 건수, 아이템·라인·차수별 판정 표" loading="lazy">
+    <figcaption>측정실 업무일지 — 근무(주간·야간)별로 아이템·라인·차수 판정을 자동으로 채움. 변경점 진행(NG n회 → 양호)도 묶어 보여 줌</figcaption>
+  </figure>
+</div>
+<p class="lead" style="font-size:13px;margin-top:10px">모든 화면의 품번·측정기 이름·고객사·LOT 는 가렸습니다.</p>
 
 <h2>신뢰성 장치</h2>
 <ul class="safe">
