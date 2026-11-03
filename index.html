@@ -86,6 +86,16 @@
   .safe { margin: 0; padding-left: 18px; }
   .safe li { margin: 6px 0; }
 
+  .summary {
+    margin-top: 22px; background: var(--accent-soft); border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0; padding: 14px 18px;
+  }
+  .summary p { margin: 0 0 6px; font-weight: 700; }
+  .summary ul { margin: 0; padding-left: 18px; }
+  .summary li { margin: 3px 0; }
+  .work .what { font-size: 13px; color: var(--accent); font-weight: 700; margin-bottom: 2px; }
+  .card .what { font-size: 12.5px; color: var(--accent); font-weight: 700; margin-bottom: 2px; }
+
   footer {
     margin-top: 44px; padding-top: 14px; border-top: 1px solid var(--line);
     font-size: 13px; color: var(--sub);
@@ -114,14 +124,24 @@
 
 <header>
   <h1>측정 데이터 자동화 작업</h1>
-  <p class="lead">CMM 성적서 수집, 측정 실수 검사, 측정 PC 저장 자동화 · 2026-10-17 ~ 2026-11-03</p>
+  <p class="lead">측정실이 손으로 하던 성적서 저장 · 정리 · 점검을 자동으로 바꿨습니다 · 2026-10-17 ~ 2026-11-04</p>
   <p class="pdf"><a href="portfolio.pdf" download>PDF 받기</a></p>
+  <div class="summary">
+    <p>핵심 요약</p>
+    <ul>
+      <li><b>저장</b> — 표제란 '적용' 한 번으로 제목 검사 · 프로그램 · 엑셀 저장까지 끝남</li>
+      <li><b>모음</b> — 측정 PC 5대의 성적서가 저절로 DB에 쌓이고 대시보드 · 업무일지로 바로 보임</li>
+      <li><b>점검</b> — 제목 실수 · 'OK'라 적힌 NG · 관리공차 초과를 사람보다 먼저 찾아냄</li>
+      <li><b>연결</b> — 성적서를 열면 도면 · 3D에서 그 치수 자리가 바로 보임</li>
+    </ul>
+  </div>
 </header>
 
 <h2>구현한 기능</h2>
 
 <article class="work">
-  <h3>1. 성적서 자동 수집 · DB화</h3>
+  <div class="what">1. 성적서 자동 수집 · DB화</div>
+  <h3>측정이 끝나면 성적서가 저절로 DB에 쌓이고 대시보드에 보입니다</h3>
   <ul class="safe">
     <li>측정 PC 공유 폴더를 1분마다 읽어 측정값을 Parquet DB에 쌓음</li>
     <li>원본은 읽기만, 임시 사본은 무결성 확인 뒤 바로 삭제</li>
@@ -136,7 +156,8 @@
 </article>
 
 <article class="work">
-  <h3>2. 성적서 제목 실수 검사 · 자동 보정</h3>
+  <div class="what">2. 성적서 제목 실수 검사 · 자동 보정</div>
+  <h3>제목에 잘못 적은 라인 · LOT · 날짜를 찾아 고치거나 승인을 받습니다</h3>
   <ul class="safe">
     <li>라인 · 가공 LOT · 소재 LOT · 근무 차수 · 날짜를 측정 시각, 저장 시각, 측정값 패턴, 측정 항목 순서로 교차 확인</li>
     <li>결과를 의심 / 자동 보정 / 사람 승인 세 단계로 나눔</li>
@@ -147,7 +168,8 @@
 </article>
 
 <article class="work">
-  <h3>3. 측정 PC 자동 저장 · 저장 전 검사</h3>
+  <div class="what">3. 측정 PC 자동 저장 · 저장 전 검사</div>
+  <h3>'적용' 한 번이면 검사 · 프로그램 저장 · 엑셀 저장이 한꺼번에 끝납니다</h3>
   <ul class="safe">
     <li>표제란 '적용' 한 번으로 제목 검사 → 프로그램 저장 → 엑셀 저장</li>
     <li>빈 칸이면 적용 버튼 꺼짐, 거푸 누름 무시, 측정 항목 종류가 틀리면 NG 창, 근무가 바뀌면 지난 LOT 비움</li>
@@ -165,7 +187,8 @@
 </article>
 
 <article class="work">
-  <h3>4. 관리공차 기준 재판정</h3>
+  <div class="what">4. 관리공차 기준 재판정</div>
+  <h3>도면 공차가 아닌 공정별 관리공차로 판정하고, 지난 데이터도 다시 판정합니다</h3>
   <ul class="safe">
     <li>가공 공차표를 따로 두고 공정 단계에 맞는 공차로 판정</li>
     <li>이미 모은 데이터까지 소급해 다시 판정</li>
@@ -174,7 +197,8 @@
 </article>
 
 <article class="work">
-  <h3>5. 성적서를 열면 도면 자리 표시 — 3D · 형상 · 조도</h3>
+  <div class="what">5. 성적서를 열면 도면 자리 표시 — 3D · 형상 · 조도</div>
+  <h3>성적서를 열면 그 치수가 도면 · 3D의 어디인지 바로 보입니다</h3>
   <ul class="safe">
     <li>CMM 성적서: 최신 도면 3D 위에 측정 위치와 NG 편차 방향 표시</li>
     <li>형상·조도 성적서: 제목의 항목 번호·지름·Rz를 도면에서 찾아 그 자리를 잘라 보여 줌</li>
@@ -196,27 +220,33 @@
 <h2>그 밖의 기능</h2>
 <div class="cards">
   <div class="card">
-    <h3>측정 프로그램 원본 보호 · 수동 저장 격리</h3>
+    <div class="what">측정 프로그램 원본 보호 · 수동 저장 격리</div>
+    <h3>원본 측정 프로그램이 실수로 바뀌지 않습니다</h3>
     <p>PC-DMIS 원본 프로그램 읽기 전용 유지, 뉴로메저 자동 저장은 측정 뒤 원본으로 되돌림, 규칙 밖 손 저장 성적서 격리.</p>
   </div>
   <div class="card">
-    <h3>형상 · 조도 데이터 통합</h3>
+    <div class="what">형상 · 조도 데이터 통합</div>
+    <h3>형상 · 조도 결과를 CMM 결과와 한 아이템으로 묶어 봅니다</h3>
     <p>형상·조도 측정기 파일을 모아 CMM 데이터와 연결, 원시 곡선에서 Rz 직접 계산.</p>
   </div>
   <div class="card">
-    <h3>품질 대시보드 · 3D 측정 위치</h3>
+    <div class="what">품질 대시보드 · 3D 측정 위치</div>
+    <h3>치수별 경향 · 분포 · Cpk를 3D 위치와 함께 봅니다</h3>
     <p>성적서 양식 화면, 치수별 경향·분포·Cpk, 측정 프로그램을 해석해 3D 모델 위에 측정 위치와 편차 방향 표시.</p>
   </div>
   <div class="card">
-    <h3>'OK'라고 적힌 NG 성적서 찾기</h3>
+    <div class="what">'OK'라고 적힌 NG 성적서 찾기</div>
+    <h3>제목은 OK인데 실제로 공차를 넘은 성적서를 걸러 냅니다</h3>
     <p>제목의 판정과 측정값의 공차 초과를 대조.</p>
   </div>
   <div class="card">
-    <h3>CMM 가동률 · 업무일지</h3>
+    <div class="what">CMM 가동률 · 업무일지</div>
+    <h3>가동률과 근무별 업무일지가 저절로 채워집니다</h3>
     <p>측정 시작·끝을 실시간으로 받아 가동률 계산, 근무별 업무일지 자동 작성, 변경점 진행 묶어 보기.</p>
   </div>
   <div class="card">
-    <h3>생산변경점 자료 자동 모음</h3>
+    <div class="what">생산변경점 자료 자동 모음</div>
+    <h3>변경점 자료가 건별 폴더로 저절로 모입니다</h3>
     <p>변경점 성적서·형상·조도 자료를 자동으로 모아 건별 폴더로 정리.</p>
   </div>
 </div>
@@ -238,9 +268,11 @@
 </div>
 
 <h2>안전 장치</h2>
+<p><b>측정 데이터를 망가뜨리지 않고, 사람 손 없이 계속 돌아가게 만들었습니다.</b></p>
 <ul class="safe">
   <li>원본 읽기만 — 측정 데이터·프로그램 폴더에 쓰지 않음</li>
   <li>서명 배포 · 자동 갱신 — RSA 서명이 맞는 새 판만 받고, 측정·저장 중이 아닐 때 스스로 새 판으로 바뀜</li>
+  <li>스스로 회복 — 보안 프로그램이 상주 도구를 멈춰 세워도 5분 안에 알아채고 새로 켬</li>
   <li>지우기 상한 — 한 번에 200건까지</li>
   <li>형식 검증(TLA+) — 저장 도구 수명·측정 상태 모델 검사</li>
 </ul>
