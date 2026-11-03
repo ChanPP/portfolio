@@ -35,6 +35,11 @@
   h3 { font-size: 17px; margin: 0 0 4px; }
   p { margin: 0 0 8px; }
   .lead { color: var(--sub); margin: 0; }
+  .pdf { margin: 12px 0 0; }
+  .pdf a {
+    display: inline-block; font-size: 13px; color: var(--accent); background: var(--accent-soft);
+    border-radius: 6px; padding: 5px 12px; text-decoration: none; font-weight: 500;
+  }
 
   .facts {
     display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 24px;
@@ -98,6 +103,7 @@
     @page { size: A4; margin: 14mm 13mm; }
     body { font-size: 12.5px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     main { max-width: none; padding: 0; }
+    .pdf { display: none; }
     h2 { margin-top: 26px; break-after: avoid; }
     .work { padding: 14px 16px; margin-bottom: 10px; }
   }
@@ -109,6 +115,7 @@
 <header>
   <h1>측정 데이터 자동화 작업</h1>
   <p class="lead">CMM 성적서 수집, 측정 실수 검사, 측정 PC 저장 자동화 · 2026-10-17 ~ 2026-11-03</p>
+  <p class="pdf"><a href="portfolio.pdf" download>PDF 받기</a></p>
 </header>
 
 <h2>구현한 기능</h2>
