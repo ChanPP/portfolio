@@ -148,10 +148,6 @@
     <li>PC-DMIS 엑셀 · 뉴로메저 성적서 형식 해석, 260자 넘는 긴 경로 처리</li>
     <li>측정 데이터 대시보드: 측정기별 성적서 수, 기간별 NG율, 아이템별 성적서와 도면·3D 연결</li>
   </ul>
-  <figure>
-    <img src="img/dash_main.jpg" alt="측정 데이터 대시보드 첫 화면" loading="lazy">
-    <figcaption>측정 데이터 대시보드</figcaption>
-  </figure>
   <span class="tag">PowerShell</span><span class="tag">C#</span><span class="tag">DuckDB · Parquet</span>
 </article>
 
@@ -217,6 +213,46 @@
   <span class="tag">Tesseract OCR</span><span class="tag">PowerShell</span><span class="tag">JavaScript</span><span class="tag">3D (trimesh)</span>
 </article>
 
+<article class="work">
+  <div class="what">6. 측정 좌표 → 도면 3D 자동 맞춤</div>
+  <h3>측정 프로그램의 좌표를 최신 도면 3D에 저절로 맞추고, 애매하면 그리지 않습니다</h3>
+  <ul class="safe">
+    <li>측정 프로그램(PC-DMIS · 뉴로메저)에서 측정 요소와 치수 위치를 뽑아, 최신 도면 STEP 모델의 구멍 벽 · 면에 맞는 회전 · 이동을 찾음</li>
+    <li>붙은 구멍 수로 성공을 판단하고, 1등과 비슷한 다른 변환이 있으면 '모호' — 180° 대칭 부품이 뒤집힌 채 그려지지 않게</li>
+    <li>치수마다 옮긴 위치가 모델 표면(0.5mm 안)에 붙는지 확인해 안 붙으면 '확인 안 됨', 단위가 INCH로 적힌 프로그램은 사람 실수로 보고 맞추지 않음</li>
+    <li>정답 시험: 알려진 회전 · 이동을 되찾는지, 반례(180° 대칭 · 한 직선 위 점 · 점 하나)에서 모호 · 실패를 내는지</li>
+  </ul>
+  <figure>
+    <img src="img/dash_report.jpg" alt="성적서 보기: 성적서 양식과 맞춘 3D 위 측정 위치" loading="lazy">
+    <figcaption>성적서 보기 — 맞춘 최신 도면 3D 위에 NG 위치와 편차 방향</figcaption>
+  </figure>
+  <span class="tag">C#</span><span class="tag">PowerShell</span><span class="tag">Python (trimesh · scipy)</span><span class="tag">STEP</span>
+</article>
+
+<article class="work">
+  <div class="what">7. 평면 측정점 편차 (점정보)</div>
+  <h3>성적서 3D에서 평면을 고르면 측정점마다 편차가 색으로 보입니다</h3>
+  <ul class="safe">
+    <li>측정 프로그램 파일(PC-DMIS .PRG 이진 · 뉴로메저 .nmp)에서 평면 측정점을 직접 읽어 DB에 쌓음 — 원본은 읽기만</li>
+    <li>탐침 공 중심 · 기계 좌표를 얼라인먼트 변환과 탐침 반경으로 부품 표면 점으로 바꿈</li>
+    <li>[평면도] 맞춘 평면에서 거리 · [좌표값] 데이텀 좌표계에서 공칭면으로부터 거리 — 평행도 NG 원인 비교</li>
+    <li>전수 대조: 평면 1,566개의 계산 값이 성적서 값과 모두 일치</li>
+  </ul>
+  <span class="tag">C#</span><span class="tag">PowerShell</span><span class="tag">JavaScript (three.js)</span><span class="tag">DuckDB</span>
+</article>
+
+<article class="work">
+  <div class="what">8. 형상 측정값 → 도면 치수 짝짓기</div>
+  <h3>형상 성적서 숫자를 도면 치수에 짝지어 판정하고, 사람이 확인한 짝만 판정합니다</h3>
+  <ul class="safe">
+    <li>미쓰도요 형상 PDF에서 측정값만 골라냄 (형상 PDF 99개로 규칙 확인)</li>
+    <li>제목 항목 자리 둘레의 도면 글자(OCR)에서 공칭 · 공차를 찾아 측정값마다 제안 / 확인 필요 / 의심으로 나눔</li>
+    <li>가까운 후보가 둘이면 늘 의심, 의심이어도 가장 가까운 치수를 미리 골라 둠</li>
+    <li>'맞음'을 누른 짝은 기억해 다음부터 같은 부품 · 항목은 바로 판정, 확인 전에는 판정을 숨김 — 각도를 길이로 잘못 읽은 OCR 오답이 NG로 뜨지 않게</li>
+  </ul>
+  <span class="tag">Python (pypdf)</span><span class="tag">Tesseract OCR</span><span class="tag">PowerShell</span><span class="tag">JavaScript</span>
+</article>
+
 <h2>그 밖의 기능</h2>
 <div class="cards">
   <div class="card">
@@ -253,10 +289,6 @@
 
 <h2>화면</h2>
 <div class="shots">
-  <figure>
-    <img src="img/dash_report.jpg" alt="성적서 보기: 성적서 양식과 3D 측정 위치" loading="lazy">
-    <figcaption>성적서 보기 — 성적서 양식, 이전 성적서 편차, 3D 위 NG 위치와 편차 방향</figcaption>
-  </figure>
   <figure>
     <img src="img/live.jpg" alt="측정기 가동 현황" loading="lazy">
     <figcaption>측정기 가동 현황</figcaption>
