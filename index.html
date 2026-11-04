@@ -81,7 +81,7 @@
   .flow .stack { display: grid; gap: 10px; }
   .flow .stack img { border: none; }
   .shots { display: grid; gap: 18px; }
-  figure.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  figure.pair { display: grid; grid-template-columns: 1fr; gap: 10px; }
   .shots figure { margin: 0; break-inside: avoid; }
 
   .safe { margin: 0; padding-left: 18px; }
@@ -251,10 +251,10 @@
     <li>측정 좌표의 점을 프로그램의 얼라인먼트 변환으로 부품 좌표에 옮김</li>
   </ul>
   <figure class="pair">
-    <img src="img/points_flat.png" alt="3D 점정보 평면도: D 데이텀 평면 45점의 맞춘 평면 편차" loading="lazy">
-    <img src="img/points_coord.png" alt="3D 점정보 좌표값: 같은 45점의 공칭면으로부터 거리" loading="lazy">
+    <img src="img/points_flat.png" alt="3D 점정보 평면도: 2B 면 22점의 맞춘 평면 편차" loading="lazy">
+    <img src="img/points_coord.png" alt="3D 점정보 좌표값: 같은 22점의 데이텀 좌표계 공칭면으로부터 거리" loading="lazy">
   </figure>
-  <figcaption>왼쪽 [평면도] 맞춘 평면에서 편차 (−6 ~ +6 µm) · 오른쪽 [좌표값] 같은 점의 공칭면으로부터 거리 (+9 ~ +36 µm) (모델 · 품번 가림)</figcaption>
+  <figcaption>2B 면 22점 — 위 [평면도] 맞춘 평면에서 편차 (−12 ~ +8 µm) · 아래 [좌표값] 데이텀 좌표계에서 공칭면으로부터 거리 (−5 ~ +18 µm, 성적서 위치 값과 맞춤) (모델 · 품번 가림)</figcaption>
   <span class="tag">C#</span><span class="tag">PowerShell</span><span class="tag">DuckDB · Parquet</span><span class="tag">JavaScript · three.js</span>
 </article>
 
