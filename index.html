@@ -94,6 +94,7 @@
   .summary p { margin: 0 0 6px; font-weight: 700; }
   .summary ul { margin: 0; padding-left: 18px; }
   .summary li { margin: 3px 0; }
+  .desc { color: var(--sub); margin: 6px 0 0; }
   .work .what { font-size: 13px; color: var(--accent); font-weight: 700; margin-bottom: 2px; }
   .card .what { font-size: 12.5px; color: var(--accent); font-weight: 700; margin-bottom: 2px; }
 
@@ -126,15 +127,15 @@
 
 <header>
   <h1>측정 데이터 자동화 작업</h1>
-  <p class="lead">측정실이 손으로 하던 성적서 저장 · 정리 · 점검을 자동으로 바꿨습니다 · 2026-10-17 ~ 2026-11-05</p>
+  <p class="lead">측정실이 손으로 하던 성적서 저장 · 정리 · 점검을 자동으로 바꿨습니다 · 2026-10-17 ~ 2026-11-11</p>
   <p class="pdf"><a href="portfolio.pdf" download>PDF 받기</a></p>
   <div class="summary">
     <p>핵심 요약</p>
     <ul>
       <li><b>점검</b> — 성적서 제목 실수를 찾아 업무일지에 띄움</li>
-      <li><b>저장</b> — 표제란 '적용' 한 번으로 검사 · 프로그램 · 엑셀 저장까지 끝남</li>
-      <li><b>연결</b> — 형상 측정값을 도면 치수와 1대1로 짝짓고, 평면 측정점을 3D 위에 표시</li>
-      <li><b>기록</b> — 가동 현황 · 근무별 업무일지가 저절로 채워짐</li>
+      <li><b>저장</b> — 표제란 '적용' 한 번으로 검사 · 프로그램 · 엑셀 저장까지 끝남 (두 종류 측정기 모두)</li>
+      <li><b>연결</b> — 형상 · 조도 측정값을 도면 치수와 1대1로 짝짓고(못 정하면 사람이 도면을 눌러 고름), 평면 측정점을 3D 위에 표시</li>
+      <li><b>기록</b> — 측정 프로그램 이벤트로 시작 · 끝을 받아 가동 현황 · 근무별 업무일지가 저절로 채워짐</li>
     </ul>
   </div>
 </header>
@@ -144,6 +145,7 @@
 <article class="work">
   <div class="what">1. 성적서 제목 실수 검사</div>
   <h3>제목의 라인 · LOT · 날짜 실수를 찾아 업무일지에 띄우고, 고침 · 맞음으로 처리합니다</h3>
+  <p class="desc">저장된 성적서 제목을 규칙과 지난 측정 통계로 검사해 틀린 곳을 업무일지 '확인 · 수정' 표에 띄웁니다. 사람이 '고침' 또는 '맞음'을 누르면 끝납니다.</p>
   <figure>
     <img src="img/title_check.png" alt="업무일지 확인·수정 표: 제목 검사가 찾은 소재LOT 날짜 실수와 고침·맞음 단추" loading="lazy">
     <figcaption>업무일지 '확인 · 수정' — 없는 날짜 '261402'(월/일 뒤바뀜) · 루틴 이름과 다른 파일 제목 (품번 · LOT · 파일 이름 가림)</figcaption>
@@ -154,6 +156,7 @@
 <article class="work">
   <div class="what">2. 측정 PC 자동 저장 · 저장 전 검사</div>
   <h3>표제란 '적용' 한 번이면 검사 · 프로그램 저장 · 엑셀 저장이 한꺼번에 끝납니다</h3>
+  <p class="desc">적용을 누르면 제목 검사 → 측정 프로그램 저장 → 엑셀 성적서 저장(체크하면 PDF 도)이 차례로 돕니다. 저장 중에는 입력을 잠그고 결과를 초록 · 빨강 창으로 알립니다. 측정자 목록과 표제란 설정은 서버 한 곳에서 모든 측정기가 같이 쓰고, 측정 프로그램 원본에 실수로 저장하는 것과 손으로 따로 저장하는 것을 막습니다. PC-DMIS 측정기와 뉴로메저 측정기 모두 같은 방식입니다.</p>
   <figure class="flow">
     <img src="img/pyoje.png" alt="표제란 화면" loading="lazy">
     <div class="stack">
@@ -166,15 +169,20 @@
 </article>
 
 <article class="work">
-  <div class="what">3. 형상 측정값 ↔ 도면 섹션 치수 1대1 짝짓기</div>
-  <h3>형상 측정 숫자마다 도면의 어느 치수인지 짝지어 공차와 나란히 보여 줍니다</h3>
+  <div class="what">3. 형상 · 조도 측정값 ↔ 도면 치수 1대1 짝짓기</div>
+  <h3>측정 숫자마다 도면의 어느 치수인지 짝지어 공차로 판정하고, 못 정한 것은 도면을 눌러 고릅니다</h3>
+  <p class="desc">형상 PDF 의 숫자를 읽어 도면 섹션 치수와 자동으로 짝짓고 공차로 OK · NG 를 냅니다. 자동으로 정하지 못한 값은 '도면에서 고르기'로 도면 위 치수를 눌러 짝을 정하고, 고른 짝은 다음 측정부터 기억합니다. 조도도 도면의 조도 기호를 눌러 짝짓습니다. 업무일지 칸을 누르면 그 칸의 측정 목록과 보기가 화면 가득 열립니다.</p>
   <figure>
-    <img src="img/shape_pair.png" alt="업무일지에서 연 형상 보기: 형상 측정값과 도면 섹션 치수 짝 표, 측정 PDF, 도면의 고른 섹션" loading="lazy">
-    <figcaption>① 형상 보기 — 측정값마다 짝지은 도면 치수 · 공차 출처, 도면에서 고른 섹션(보라 점선) (품번 · 측정기 · 도면 치수 · PDF 가림)</figcaption>
+    <img src="img/shape_pick.png" alt="형상 보기의 도면에서 고르기: 위 칸 측정 목록, 측정 PDF, 도면에서 치수를 눌러 짝 고르기, 아래 짝 표의 확인 · 짝 바꾸기 · 공차 고치기 단추" loading="lazy">
+    <figcaption>① 도면에서 고르기 — 자동으로 못 정한 각도 값을 도면에서 눌러 짝 지정, 표에 '사람 고름'으로 판정 (치수 · 제목 · 도면 · PDF 가림)</figcaption>
   </figure>
   <figure>
-    <img src="img/rz_optool.png" alt="업무일지에서 연 조도 보기: 제목의 #20 Ø8 을 공정 공구표로 2B71 로 바꿔 도면 단면 자리 표시" loading="lazy">
-    <figcaption>② 조도 보기 — 제목의 '#20 Ø8' → 검사 번호 2B71 로 바꿔 도면 단면 자리 표시 (품번 · 측정기 · 도면 · PDF 가림)</figcaption>
+    <img src="img/shape_pair.png" alt="업무일지에서 연 형상 보기: 형상 측정값과 도면 섹션 치수 짝 표, 측정 PDF, 도면의 고른 섹션" loading="lazy">
+    <figcaption>② 자동 짝 — 측정값마다 짝지은 도면 치수 · 공차 출처, 도면에서 고른 섹션(보라 점선) (제목 · 측정값 · 도면 치수 · PDF 가림)</figcaption>
+  </figure>
+  <figure>
+    <img src="img/rz_optool.png" alt="업무일지에서 연 조도 보기: 제목의 공정 · 공구를 검사 번호로 바꿔 도면 단면 자리 표시" loading="lazy">
+    <figcaption>③ 조도 보기 — 제목의 공정 · 공구를 공정 공구표로 검사 번호로 바꿔 도면 단면 자리 표시 (제목 · 측정값 · 도면 · PDF 가림)</figcaption>
   </figure>
   <span class="tag">Python</span><span class="tag">Tesseract OCR</span><span class="tag">PDF 구조 해석</span><span class="tag">PowerShell</span><span class="tag">JavaScript</span>
 </article>
@@ -182,6 +190,7 @@
 <article class="work">
   <div class="what">4. 성적서 3D 평면 점정보</div>
   <h3>평면을 고르면 몇 점을 어디에 찍었고 점마다 편차가 얼마인지 3D 위에 보입니다</h3>
+  <p class="desc">성적서의 평면 항목을 고르면 측정점 위치를 3D 모델 위에 찍고, 맞춘 평면 편차와 데이텀 좌표계 공칭면으로부터의 거리를 점마다 색으로 보여 줍니다.</p>
   <figure class="pair">
     <img src="img/points_flat.png" alt="3D 점정보 평면도: 2B 면 22점의 맞춘 평면 편차" loading="lazy">
     <img src="img/points_coord.png" alt="3D 점정보 좌표값: 같은 22점의 데이텀 좌표계 공칭면으로부터 거리" loading="lazy">
@@ -193,6 +202,7 @@
 <article class="work">
   <div class="what">5. 측정기 가동 현황 · 업무일지 자동 작성</div>
   <h3>측정 시작 · 끝을 실시간으로 받아 가동 현황과 근무별 업무일지가 저절로 채워집니다</h3>
+  <p class="desc">측정 프로그램 이벤트로 측정 시작 · 끝을 바로 받아 측정기마다 지금 무엇을 재는지 보여 주고, 주간 · 야간 근무별 업무일지를 자동으로 채웁니다.</p>
   <figure>
     <img src="img/live.jpg" alt="측정기 가동 현황" loading="lazy">
     <figcaption>측정기 가동 현황</figcaption>
